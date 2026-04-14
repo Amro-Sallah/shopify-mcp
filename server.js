@@ -8,9 +8,26 @@ app.get("/", (req, res) => {
   res.send("OK");
 });
 
-// MCP basic JSON-RPC
 app.post("/mcp", (req, res) => {
   const { method, id } = req.body || {};
+
+  // 🔥 مهم جدًا
+  if (method === "initialize") {
+    return res.json({
+      jsonrpc: "2.0",
+      id,
+      result: {
+        protocolVersion: "2024-11-05",
+        capabilities: {
+          tools: {}
+        },
+        serverInfo: {
+          name: "shopify-mcp",
+          version: "1.0.0"
+        }
+      }
+    });
+  }
 
   if (method === "tools/list") {
     return res.json({
@@ -37,7 +54,10 @@ app.post("/mcp", (req, res) => {
       id,
       result: {
         content: [
-          { type: "text", text: "Products coming soon 🚀" }
+          {
+            type: "text",
+            text: "Products working 🚀"
+          }
         ]
       }
     });
@@ -51,4 +71,4 @@ app.post("/mcp", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running on", PORT));
+app.listen(PORT, () => console.log("Server running"));
