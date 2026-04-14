@@ -1,70 +1,37 @@
-const express = require("express");
-const app = express();
+import { createServer } from "@modelcontextprotocol/sdk/server/index.js";
+import express from "express";
 
+const app = express();
 app.use(express.json());
 
-// ✅ مهم: CORS + headers
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  next();
+const server = createServer({
+  name: "shopify-mcp",
+  version: "1.0.0",
 });
 
-// health check
+server.tool(
+  "get_products",
+  "Get products list",
+  {},
+  async () => {
+    return {
+      content: [
+        {
+          type: "text",
+          text: "Products coming soon 🚀"
+        }
+      ]
+    };
+  }
+);
+
+app.post("/mcp", async (req, res) => {
+  await server.handleRequest(req, res);
+});
+
 app.get("/", (req, res) => {
-  res.send("OK");
-});
-
-// OPTIONS support
-app.options("*", (req, res) => {
-  res.sendStatus(200);
-});
-
-// MCP endpoint
-app.post("/", (req, res) => {
-  const { method, id } = req.body;
-
-  if (method === "tools/list") {
-    return res.json({
-      jsonrpc: "2.0",
-      id,
-      result: {
-        tools: [
-          {
-            name: "get_products",
-            description: "Get products list",
-            inputSchema: {
-              type: "object",
-              properties: {}
-            }
-          }
-        ]
-      }
-    });
-  }
-
-  if (method === "tools/call") {
-    return res.json({
-      jsonrpc: "2.0",
-      id,
-      result: {
-        content: [
-          {
-            type: "text",
-            text: "Products data coming soon 🚀"
-          }
-        ]
-      }
-    });
-  }
-
-  return res.json({
-    jsonrpc: "2.0",
-    id,
-    result: {}
-  });
+  res.send("MCP OK");
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running"));
+app.listen(PORT);
