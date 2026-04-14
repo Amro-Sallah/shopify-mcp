@@ -1,16 +1,28 @@
 const express = require("express");
-const fetch = require("node-fetch");
-
 const app = express();
 
-const SHOP = "stpsco.myshopify.com";
-const TOKEN = "demo";
+app.use(express.json());
 
-app.get("/", (req, res) => {
+// MCP endpoint
+app.post("/", (req, res) => {
   res.json({
-    status: "working",
-    message: "server is live"
+    tools: [
+      {
+        name: "get_products",
+        description: "Get products list",
+        input_schema: {
+          type: "object",
+          properties: {}
+        }
+      }
+    ]
   });
 });
 
-app.listen(3000);
+// test
+app.get("/", (req, res) => {
+  res.json({ status: "MCP server ready" });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT);
