@@ -3,14 +3,19 @@ const app = express();
 
 app.use(express.json());
 
-// MCP JSON-RPC endpoint
+// 🔥 مهم: health check
+app.get("/", (req, res) => {
+  res.send("OK");
+});
+
+// MCP endpoint
 app.post("/", (req, res) => {
-  const { method } = req.body;
+  const { method, id } = req.body;
 
   if (method === "tools/list") {
     return res.json({
       jsonrpc: "2.0",
-      id: req.body.id,
+      id,
       result: {
         tools: [
           {
@@ -26,17 +31,12 @@ app.post("/", (req, res) => {
     });
   }
 
-  res.json({
+  return res.json({
     jsonrpc: "2.0",
-    id: req.body.id,
+    id,
     result: {}
   });
 });
 
-// test
-app.get("/", (req, res) => {
-  res.send("MCP READY");
-});
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT);
+app.listen(PORT, () => console.log("Server running"));
