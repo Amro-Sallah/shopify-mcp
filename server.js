@@ -3,9 +3,22 @@ const app = express();
 
 app.use(express.json());
 
-// 🔥 مهم: health check
+// ✅ مهم: CORS + headers
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  next();
+});
+
+// health check
 app.get("/", (req, res) => {
   res.send("OK");
+});
+
+// OPTIONS support
+app.options("*", (req, res) => {
+  res.sendStatus(200);
 });
 
 // MCP endpoint
@@ -25,6 +38,21 @@ app.post("/", (req, res) => {
               type: "object",
               properties: {}
             }
+          }
+        ]
+      }
+    });
+  }
+
+  if (method === "tools/call") {
+    return res.json({
+      jsonrpc: "2.0",
+      id,
+      result: {
+        content: [
+          {
+            type: "text",
+            text: "Products data coming soon 🚀"
           }
         ]
       }
